@@ -1,0 +1,26 @@
+# Python virtual environment
+venv/
+ENV/
+env/
+
+# Python compiled cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code settings
+.vscode/
+
+# Environment / Secret variables
+.env
+
+# Local test output images / uploads
+*.jpg
+*.jpeg
+*.png
+panorama_*.jpg
+
+# OS garbage files
+.DS_Store
+Thumbs.db
