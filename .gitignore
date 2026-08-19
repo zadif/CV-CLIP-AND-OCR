@@ -24,3 +24,5 @@ panorama_*.jpg
 # OS garbage files
 .DS_Store
 Thumbs.db
+
+images/
