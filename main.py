@@ -3,13 +3,19 @@ import torch
 from PIL import Image
 import open_clip
 import numpy as np
+import time
+import watchdog.events
+import watchdog.observers
+import os
+
 
 reader = easyocr.Reader(['en'], gpu=False) 
 openclipModel= 'ViT-B-32'
 model, _, preprocess = open_clip.create_model_and_transforms(openclipModel, pretrained='openai')
 model.eval() 
 
-DEBUG=True
+DEBUG=False
+database = []
 
 
 def extractTextFromImage(image: str) -> list[str]:
@@ -59,28 +65,40 @@ def getClipImageEmbedding(image: str) -> np.ndarray:
     return image_features
 
 
-def processScreenshot(image: str):
+def processImage(image: str):
+    try:
+        time.sleep(0.5) 
 
-    if DEBUG==True:    
-        print(f"Processing: {image}")
+        if DEBUG==True:    
+            print(f"Processing: {image}")
+        
+        texts = extractTextFromImage(image)
+
+        if DEBUG==True:    
+            print("\n--- OCR Text Detected ---")
+            for i, text in enumerate(texts, 1):
+                print(f"{i}. {text}")
+        
+
+        embedding = getClipImageEmbedding(image)
+
+        if DEBUG==True:    
+            print("\n--- CLIP Embedding ---")
+            print(embedding[:5])  
+            print(f"Embedding shape: {embedding.shape}")
+
+        database.append({
+            "image_path": image,
+            "ocr_text": texts,
+            "clipEmbedding": embedding
+        })
+        print(f"Added {image} to database. Total: {len(database)}")
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise
     
-    texts = extractTextFromImage(image)
 
-    if DEBUG==True:    
-        print("\n--- OCR Text Detected ---")
-        for i, text in enumerate(texts, 1):
-            print(f"{i}. {text}")
-    
-
-    embedding = getClipImageEmbedding(image)
-
-    if DEBUG==True:    
-        print("\n--- CLIP Embedding ---")
-        print(embedding[:5])  
-        print(f"Embedding shape: {embedding.shape}")
-    
-    # Save embedding to a file for later use
-    np.save('saveEmbedding.npy', embedding)
 
 
 def searchThroughImages(query: str, database: list[dict], topK: int = 3) -> list[dict]:
@@ -123,30 +141,65 @@ def searchThroughImages(query: str, database: list[dict], topK: int = 3) -> list
         raise
 
 
-if __name__ == "__main__":
-    # 1. Define a list of test images (put 3-4 real images in a folder)
-    test_images = ["C:\\Users\\zadif\\Desktop\\VS CODE\\python\\CV\\CLIPXOCR\\images\\1.jpg", "C:\\Users\\zadif\\Desktop\\VS CODE\\python\\CV\\CLIPXOCR\\images\\2.jpg", "C:\\Users\\zadif\\Desktop\\VS CODE\\python\\CV\\CLIPXOCR\\images\\3.jpg"]  # Replace with your actual image paths
-    
-    # 2. Build the temporary database
-    database = []
-    for img_path in test_images:
-        # Call your functions to get the data
-        ocr_text = extractTextFromImage(img_path)
-        clip_emb = getClipImageEmbedding(img_path)
-        
-        # Append a dictionary to the database list
-        database.append({
-            "image_path": img_path,
-            "ocr_text": ocr_text,
-            "clipEmbedding": clip_emb
-        })
-        print(f"Added {img_path} to database.")
 
-    print("\n--- Starting Search ---")
-    # 3. Test the search function
-    query = "a picture of a man"  # Change this to match one of your test images
-    results = searchThroughImages(query, database, topK=3)
-    
-    # 4. Print the results
-    for score, item in results:
-        print(f"Score: {score:.4f} | Path: {item['image_path']}")
+class Handler(watchdog.events.PatternMatchingEventHandler):
+
+    def __init__(self):
+        super().__init__(
+            patterns=["*.jpg", "*.png", "*.jpeg"],
+            ignore_directories=True,
+            case_sensitive=False
+        )
+
+    def on_created(self, event):
+        try:
+            processImage(event.src_path)
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            raise
+
+
+    def on_deleted(self, event):
+        global database
+        try:
+            database = [item for item in database if item["image_path"] != event.src_path]
+            print(f"Removed {event.src_path} from database. Total images: {len(database)}")
+        except Exception as e:
+                        print(f"Error occurred: {e}")
+                        raise
+
+
+  
+
+
+
+if __name__ == "__main__":
+
+    path = "C:\\Users\\zadif\\Desktop\\VS CODE\\python\\CV\\CLIPXOCR\\images"
+
+    # processing already present images
+    files=os.listdir(path)
+    imageFiles = [f for f in files if f.lower().endswith(('.jpg', '.png', '.jpeg'))]
+
+    for file in imageFiles:
+        name=os.path.join(path, file)
+        processImage(name)
+
+    handler = Handler()
+    observer = watchdog.observers.Observer()
+    observer.schedule(handler, path=path, recursive=True)
+    observer.start()
+    print("Observing the folder")
+
+ 
+
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()
+   
