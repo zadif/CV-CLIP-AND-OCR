@@ -10,7 +10,11 @@ import os
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, FilterSelector, Filter, FieldCondition, MatchValue
 import uuid
+from PIL import Image
+from pillow_heif import register_heif_opener
 
+# solving the .avif issue
+register_heif_opener()
 
 reader = easyocr.Reader(['en'], gpu=False) 
 openclipModel= 'ViT-B-32'
@@ -38,9 +42,15 @@ def extractTextFromImage(image: str) -> list[str]:
         if not image:
             raise ValueError("Image path cannot be empty.")
 
-        "Detail=0 make sure we dont get bounding box in output"
+        # 1. Open with PIL
+        img = Image.open(image)
+        img = img.convert("RGB")
 
-        result = reader.readtext(image, detail=0)
+        img_np = np.array(img)
+
+        "Detail=0 make sure we dont get bounding box in output"
+        result = reader.readtext(img_np, detail=0)
+
         if result is None:
             raise ValueError("OCR failed")
         
@@ -137,14 +147,14 @@ def searchThroughImages(query: str, topK: int = 3) -> list[dict]:
         text_features /= text_features.norm(dim=-1, keepdim=True)
         text_features = text_features.detach().cpu().numpy() 
         
-        results = qdrant.search(
+        results = qdrant.query_points(
             collection_name=collectionName,
-            query_vector=text_features.flatten().tolist(),
+            query=text_features.flatten().tolist(),
             limit=topK
         )
-
-        # 7. Return the topK results.
-        return results
+        
+        # query_points returns a QueryResponse object, the actual list of points is in .points
+        return results.points
 
     except Exception as e:
         print(f"Error occurred: {e}")
@@ -155,7 +165,7 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 
     def __init__(self):
         super().__init__(
-            patterns=["*.jpg", "*.png", "*.jpeg"],
+            patterns=["*.jpg", "*.png", "*.jpeg","*.webp","*.avif"],
             ignore_directories=True,
             case_sensitive=False
         )
@@ -208,35 +218,17 @@ def isAlreadyPresentInQdrant(image: str) -> bool:
     )
     return len(results) > 0
 
-if __name__ == "__main__":
-
-    path = "C:\\Users\\zadif\\Desktop\\VS CODE\\python\\CV\\CLIPXOCR\\images"
-
+def processAlreadyPresentImages(folderPath:str):
     # processing already present images if any
-    files=os.listdir(path)
-    imageFiles = [f for f in files if f.lower().endswith(('.jpg', '.png', '.jpeg'))]
+    
+    files=os.listdir(folderPath)
+    imageFiles = [f for f in files if f.lower().endswith(('.jpg', '.png', '.jpeg',".webp",".avif"))]
 
     for file in imageFiles:
-        name=os.path.join(path, file)
+        name=os.path.join(folderPath, file)
 
         if isAlreadyPresentInQdrant(name):
             continue
         processImage(name)
 
-    handler = Handler()
-    observer = watchdog.observers.Observer()
-    observer.schedule(handler, path=path, recursive=True)
-    observer.start()
-    print("Observing the folder")
 
- 
-
-
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()
-   
