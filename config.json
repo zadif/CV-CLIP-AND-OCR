@@ -1,0 +1,9 @@
+{
+    "path": "C:/Users/zadif/Desktop/check",
+    "clip_model": "ViT-B-32",
+    "ocr_languages": [
+        "en"
+    ],
+    "recursive_watch": true,
+    "topK": 6
+}

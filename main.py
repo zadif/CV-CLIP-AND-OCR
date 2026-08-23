@@ -12,12 +12,15 @@ from qdrant_client.models import Distance, VectorParams, PointStruct, FilterSele
 import uuid
 from PIL import Image
 from pillow_heif import register_heif_opener
+from config import loadConfig
+
+config = loadConfig()
 
 # solving the .avif issue
 register_heif_opener()
 
-reader = easyocr.Reader(['en'], gpu=False) 
-openclipModel= 'ViT-B-32'
+reader = easyocr.Reader(config["ocr_languages"], gpu=False) 
+openclipModel= config["clip_model"]
 model, _, preprocess = open_clip.create_model_and_transforms(openclipModel, pretrained='openai')
 model.eval() 
 
@@ -103,13 +106,14 @@ def processImage(image: str):
         texts = extractTextFromImage(image)
         embedding = getClipImageEmbedding(image)
 
-        
+        config=loadConfig()
         point = PointStruct(
             id=str(uuid.uuid4()),
             vector=embedding.flatten().tolist(),
             payload={
                 "image_path": image,
-                "ocr_text": texts
+                "ocr_text": texts,
+                "watchFolder": config["path"]
             }
         )
         
@@ -125,7 +129,7 @@ def processImage(image: str):
 
 
 
-def searchThroughImages(query: str, topK: int = 3) -> list[dict]:
+def searchThroughImages(query: str, topK: int = 3,watchFolder:str = None) -> list[dict]:
 
     try:
 
@@ -146,11 +150,21 @@ def searchThroughImages(query: str, topK: int = 3) -> list[dict]:
 
         text_features /= text_features.norm(dim=-1, keepdim=True)
         text_features = text_features.detach().cpu().numpy() 
-        
+        query_filter = None
+        if watchFolder:
+                query_filter = Filter(
+                    must=[
+                        FieldCondition(
+                            key="watchFolder",
+                            match=MatchValue(value=watchFolder)
+                        )
+                    ]
+                )
         results = qdrant.query_points(
             collection_name=collectionName,
             query=text_features.flatten().tolist(),
-            limit=topK
+            limit=topK,
+            query_filter=query_filter
         )
         
         # query_points returns a QueryResponse object, the actual list of points is in .points

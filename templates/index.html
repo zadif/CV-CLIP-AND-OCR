@@ -13,8 +13,8 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #fafafa;
-            color: #222;
+            background: #181818;
+            color: #eee;
         }
 
         .container {
@@ -24,12 +24,31 @@
 
         h1 {
             text-align: center;
-            color: #f97316;
+            color: #ff7518;
             font-size: 42px;
             margin-bottom: 28px;
         }
 
-        form {
+        /* Settings button */
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            padding: 9px 15px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #242424;
+            color: #ddd;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .settings-btn:hover {
+            background: #2d2d2d;
+        }
+
+        /* Search */
+        form.search-form {
             display: flex;
             max-width: 650px;
             margin: 0 auto 45px;
@@ -40,28 +59,32 @@
             padding: 14px 16px;
             font-size: 16px;
             border: 1px solid #ddd;
-            border-radius: 7px 0 0 7px;
             outline: none;
         }
 
-        input:focus {
-            border-color: #f97316;
+        .search-input {
+            border-radius: 7px 0 0 7px;
         }
 
-        button {
+        .search-input:focus {
+            border-color: #ff7518;
+        }
+
+        .search-btn {
             padding: 14px 22px;
             border: none;
-            background: #f97316;
+            background: #ff7518;
             color: white;
             font-size: 16px;
             cursor: pointer;
             border-radius: 0 7px 7px 0;
         }
 
-        button:hover {
-            background: #ea580c;
+        .search-btn:hover {
+            background: #e8660f;
         }
 
+        /* Results */
         .results {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -69,8 +92,8 @@
         }
 
         .card {
-            background: white;
-            border: 1px solid #e5e5e5;
+            background: #222;
+            border: 1px solid #333;
             border-radius: 8px;
             overflow: hidden;
         }
@@ -88,39 +111,178 @@
         }
 
         .score {
-            color: #666;
+            color: #aaa;
         }
 
         .ocr {
             margin-top: 6px;
-            color: #444;
+            color: #ddd;
         }
 
         .empty {
             text-align: center;
-            color: #777;
+            color: #888;
         }
 
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -390px;
+            width: 370px;
+            max-width: 90%;
+            height: 100vh;
+            background: #202020;
+            border-left: 1px solid #333;
+            padding: 25px;
+            transition: right 0.25s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #ff7518;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .setting-group input,
+        .setting-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #181818;
+            color: #eee;
+            outline: none;
+        }
+
+        .setting-group input:focus,
+        .setting-group select:focus {
+            border-color: #ff7518;
+        }
+
+        .folder-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .folder-row input {
+            min-width: 0;
+        }
+
+        .folder-btn {
+            flex-shrink: 0;
+            padding: 0 12px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #292929;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .folder-btn:hover {
+            background: #333;
+        }
+
+        .checkbox-row {
+            display: flex !important;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-row input {
+            width: auto;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 6px;
+            background: #ff7518;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .save-btn:hover {
+            background: #e8660f;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #7ddc8b;
+            display: none;
+        }
+
+        .message.error {
+            color: #ff7777;
+        }
+
+        /* Small screens */
         @media (max-width: 500px) {
             .container {
-                margin-top: 50px;
+                margin-top: 65px;
             }
 
             h1 {
                 font-size: 32px;
             }
 
-            form {
+            form.search-form {
                 flex-direction: column;
             }
 
-            input,
-            button {
+            .search-input,
+            .search-btn {
                 border-radius: 7px;
             }
 
-            button {
+            .search-btn {
                 margin-top: 8px;
+            }
+
+            .settings-btn {
+                top: 15px;
+                right: 15px;
             }
         }
     </style>
@@ -128,27 +290,29 @@
 
 <body>
 
+    <button class="settings-btn" onclick="openSettings()">Settings</button>
+
     <main class="container">
 
         <h1>Search Through Your Images</h1>
 
-        <form action="/search" method="POST">
+        <form class="search-form" action="/search" method="POST">
             <input
+                class="search-input"
                 type="text"
                 name="query"
                 placeholder="Search your images..."
                 value="{{ query | default('') }}"
                 required
             >
-            <button type="submit">Search</button>
+            <button class="search-btn" type="submit">Search</button>
         </form>
 
         {% if results %}
             <div class="results">
                 {% for item in results %}
                     <div class="card">
-                        <img src="/images/{{ item.path }}" alt="Search result">
-
+                        <img src="/view-image?file_path={{ item.path | urlencode }}" alt="Search result">
                         <div class="info">
                             <div class="score">
                                 Score: {{ "%.4f"|format(item.score) }}
@@ -168,6 +332,181 @@
         {% endif %}
 
     </main>
+
+
+    <!-- Settings Sidebar -->
+    <aside class="sidebar" id="settingsSidebar">
+
+        <div class="sidebar-header">
+            <h2>Settings</h2>
+            <button class="close-btn" onclick="closeSettings()">&times;</button>
+        </div>
+
+        <form id="settingsForm">
+
+            <div class="setting-group">
+                <label for="watchFolder">Watch Folder</label>
+
+                <div class="folder-row">
+                    <input
+                        id="watchFolder"
+                        type="text"
+                        value="{{ config.path | default('') }}"
+                        readonly
+                        name="watch_folder"
+                    >
+
+                    <button
+                        type="button"
+                        class="folder-btn"
+                        onclick="chooseFolder()"
+                    >
+                        Choose Folder...
+                    </button>
+                </div>
+            </div>
+
+
+           
+
+            <div class="setting-group">
+                <label for="ocrLanguages">OCR Languages</label>
+
+                <input
+                    id="ocrLanguages"
+                    type="text"
+                    placeholder="eng, urd"
+                    value="{{ config.ocr_languages | join(', ') }}"
+                >
+            </div>
+
+
+            <div class="setting-group">
+                <label for="topK">Top K Results</label>
+
+                <input
+                    id="topK"
+                    type="number"
+                    min="1"
+                    value="{{ config.topK | default(5) }}"
+                >
+            </div>
+
+
+            <div class="setting-group">
+                <label class="checkbox-row">
+                    <input
+                        id="recursiveWatch"
+                        type="checkbox"
+                        {% if config.recursive_watch %}checked{% endif %}
+                    >
+                    Recursive Watch
+                </label>
+            </div>
+
+
+            <button class="save-btn" type="submit">
+                Save Settings
+            </button>
+
+            <div id="settingsMessage" class="message"></div>
+
+        </form>
+
+    </aside>
+
+
+    <script>
+        const sidebar = document.getElementById("settingsSidebar");
+        const settingsForm = document.getElementById("settingsForm");
+        const message = document.getElementById("settingsMessage");
+
+
+        function openSettings() {
+            sidebar.classList.add("open");
+        }
+
+
+        function closeSettings() {
+            sidebar.classList.remove("open");
+        }
+
+
+        async function chooseFolder() {
+            try {
+                const response = await fetch("/api/pick-folder");
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    document.getElementById("watchFolder").value = data.folder;
+                }
+            } catch (error) {
+                showMessage("Could not choose folder.", true);
+            }
+        }
+
+
+        settingsForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+
+            formData.append(
+                "watch_folder",
+                document.getElementById("watchFolder").value
+            );
+
+            formData.append(
+                "clip_model",
+                document.getElementById("clipModel").value
+            );
+
+            formData.append(
+                "ocr_languages",
+                document.getElementById("ocrLanguages").value
+            );
+
+            formData.append(
+                "recursive_watch",
+                document.getElementById("recursiveWatch").checked
+            );
+
+            formData.append(
+                "topK",
+                parseInt(document.getElementById("topK").value, 10)
+            );
+
+
+            try {
+                const response = await fetch("/api/settings", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message || "Failed to save settings.", true);
+                }
+
+            } catch (error) {
+                showMessage("Failed to save settings.", true);
+            }
+        });
+
+
+        function showMessage(text, error = false) {
+            message.textContent = text;
+            message.classList.toggle("error", error);
+            message.style.display = "block";
+
+            setTimeout(() => {
+                message.style.display = "none";
+            }, 3000);
+        }
+    </script>
 
 </body>
 </html>
