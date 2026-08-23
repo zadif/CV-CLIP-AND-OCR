@@ -10,7 +10,6 @@ import os
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, FilterSelector, Filter, FieldCondition, MatchValue
 import uuid
-import hashlib
 
 
 reader = easyocr.Reader(['en'], gpu=False) 
@@ -94,12 +93,9 @@ def processImage(image: str):
         texts = extractTextFromImage(image)
         embedding = getClipImageEmbedding(image)
 
-        "Generate a unique ID based on the image path, it handles the case where the same image is added multiple times,"
-        " it will have the same id and will be updated in qdrant instead of creating a new entry." 
         
-        id=uuid.uuid5(namespace, image)  
         point = PointStruct(
-            id=id,
+            id=str(uuid.uuid4()),
             vector=embedding.flatten().tolist(),
             payload={
                 "image_path": image,
@@ -196,6 +192,21 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
             print(f"Error occurred: {e}")
             raise
 
+def isAlreadyPresentInQdrant(image: str) -> bool:
+
+    results, _ = qdrant.scroll(
+        collection_name=collectionName,
+        scroll_filter=Filter(
+            must=[
+                FieldCondition(
+                    key="image_path",
+                    match=MatchValue(value=image)
+                )
+            ]
+        ),
+        limit=1
+    )
+    return len(results) > 0
 
 if __name__ == "__main__":
 
@@ -207,6 +218,9 @@ if __name__ == "__main__":
 
     for file in imageFiles:
         name=os.path.join(path, file)
+
+        if isAlreadyPresentInQdrant(name):
+            continue
         processImage(name)
 
     handler = Handler()
