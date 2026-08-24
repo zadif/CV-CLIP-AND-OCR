@@ -65,37 +65,48 @@ async def get_settings():
     return config
 
 @app.post("/api/settings")
-async def updateSettings(request: Request, watch_folder: str = Form(...), clip_model: str = Form(...), ocr_languages: str = Form(...), recursive_watch: bool = Form(False), topK: int = Form(...)):
+async def updateSettings(watch_folder: str = Form(...), topK: int = Form(...)):
     global config,observer
-    oldFolder=config["path"]
+    try:
 
-    config["path"] = watch_folder
-    config["clip_model"] = clip_model
-    config["ocr_languages"] = [lang.strip() for lang in ocr_languages.split(",")]
-    config["recursive_watch"] = recursive_watch
-    config["topK"] = topK
+        if not os.path.isdir(watch_folder):
+            return {
+                "status": "error",
+                "message": "Selected folder does not exist."
+            }
+        oldFolder=config["path"]
 
-    saveConfig(config)
-    print(oldFolder)
-    print(watch_folder)
-    if oldFolder != watch_folder:
-        print(f"Folder changed from {oldFolder} to {watch_folder}. Restarting watcher...")
-        
-        # Stop the old watcher
-        if observer:
-            observer.stop()
-            observer.join()
+        config["path"] = watch_folder
+        config["topK"] = topK
+
+        saveConfig(config)
+
+        if oldFolder != watch_folder:
+            print(f"Folder changed from {oldFolder} to {watch_folder}. Restarting watcher...")
             
-        # Start a new watcher on the new folder
-        handler = Handler()
-        observer = watchdog.observers.Observer()
-        observer.schedule(handler, path=watch_folder, recursive=recursive_watch)
-        observer.start()
-        print(f"Now watching: {watch_folder}")
+            # Stop the old watcher
+            if observer:
+                observer.stop()
+                observer.join()
+                
+            # Start a new watcher on the new folder
+            handler = Handler()
+            observer = watchdog.observers.Observer()
+            observer.schedule(handler, path=watch_folder, recursive=True)
+            observer.start()
+            path = config["path"]
+            processAlreadyPresentImages(path)
+            print(f"Now watching: {watch_folder}")
+        
+        return {"status": "success", "message": "Settings updated successfully!"}
 
+    except Exception as e:
+        print(f"Error updating settings: {e}")
 
-    
-    return {"status": "success", "message": "Settings updated successfully!"}
+        return {
+            "status": "error",
+            "message": "Failed to update settings."
+        }
 
 @app.get("/api/pick-folder")
 async def pick_folder():
@@ -106,9 +117,6 @@ async def pick_folder():
     root.destroy()
     
     if folder_selected:
-        global config
-        config["path"] = folder_selected
-        saveConfig(config)
         return {"status": "success", "folder": folder_selected}
     return {"status": "cancelled"}
 

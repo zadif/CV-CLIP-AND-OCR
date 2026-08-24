@@ -247,14 +247,18 @@
         }
 
         .message {
-            margin-top: 12px;
-            font-size: 14px;
-            color: #7ddc8b;
             display: none;
+            margin-top: 15px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            background-color: #e8f7ee;
+            color: #218838;
         }
 
         .message.error {
-            color: #ff7777;
+            background-color: #fdeaea;
+            color: #d93025;
+            border: 1px solid #f5c2c0;
         }
 
         /* Small screens */
@@ -369,16 +373,6 @@
 
            
 
-            <div class="setting-group">
-                <label for="ocrLanguages">OCR Languages</label>
-
-                <input
-                    id="ocrLanguages"
-                    type="text"
-                    placeholder="eng, urd"
-                    value="{{ config.ocr_languages | join(', ') }}"
-                >
-            </div>
 
 
             <div class="setting-group">
@@ -392,17 +386,6 @@
                 >
             </div>
 
-
-            <div class="setting-group">
-                <label class="checkbox-row">
-                    <input
-                        id="recursiveWatch"
-                        type="checkbox"
-                        {% if config.recursive_watch %}checked{% endif %}
-                    >
-                    Recursive Watch
-                </label>
-            </div>
 
 
             <button class="save-btn" type="submit">
@@ -456,20 +439,7 @@
                 document.getElementById("watchFolder").value
             );
 
-            formData.append(
-                "clip_model",
-                document.getElementById("clipModel").value
-            );
 
-            formData.append(
-                "ocr_languages",
-                document.getElementById("ocrLanguages").value
-            );
-
-            formData.append(
-                "recursive_watch",
-                document.getElementById("recursiveWatch").checked
-            );
 
             formData.append(
                 "topK",

@@ -21,7 +21,7 @@ register_heif_opener()
 
 reader = easyocr.Reader(config["ocr_languages"], gpu=False) 
 openclipModel= config["clip_model"]
-model, _, preprocess = open_clip.create_model_and_transforms(openclipModel, pretrained='openai')
+model, _, preprocess = open_clip.create_model_and_transforms(openclipModel, pretrained='laion2b_s34b_b88k')
 model.eval() 
 
 DEBUG=True
