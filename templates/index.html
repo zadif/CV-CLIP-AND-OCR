@@ -12,7 +12,7 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             background: #181818;
             color: #eee;
         }
@@ -24,9 +24,18 @@
 
         h1 {
             text-align: center;
-            color: #ff7518;
+            color: #f3750e;
             font-size: 42px;
-            margin-bottom: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
         }
 
         /* Settings button */
@@ -41,54 +50,138 @@
             color: #ddd;
             cursor: pointer;
             font-size: 14px;
+            z-index: 100;
+            transition: all 0.2s;
         }
 
         .settings-btn:hover {
             background: #2d2d2d;
+            border-color: #555;
         }
 
         /* Search */
-        form.search-form {
-            display: flex;
-            max-width: 650px;
+        .search-area {
+            max-width: 700px;
             margin: 0 auto 45px;
         }
 
-        input {
-            flex: 1;
-            padding: 14px 16px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            outline: none;
+        form.search-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .search-input {
-            border-radius: 7px 0 0 7px;
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 7px;
+            outline: none;
+            background: #242424;
+            color: #eee;
+            transition: border-color 0.2s;
         }
 
         .search-input:focus {
-            border-color: #ff7518;
+            border-color: #ff8c00;
         }
 
         .search-btn {
             padding: 14px 22px;
             border: none;
-            background: #ff7518;
-            color: white;
+            background: #f3750e;
+            color: #181818;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            border-radius: 0 7px 7px 0;
+            border-radius: 7px;
+            transition: all 0.2s;
         }
 
         .search-btn:hover {
-            background: #e8660f;
+            background: #ffa033;
+            box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+        }
+
+.tolerance-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+        .tolerance-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #888;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .tolerance-toggle input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: #ff8c00;
+            width: 16px;
+            height: 16px;
+        }
+
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #333;
+            color: #888;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .help-icon:hover {
+            background: #ff8c00;
+            color: #181818;
+        }
+
+        .help-icon .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #ddd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: normal;
+            white-space: normal;
+            width: 220px;
+            text-align: left;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            pointer-events: none;
+            line-height: 1.4;
+        }
+
+        .help-icon:hover .tooltip {
+            display: block;
         }
 
         /* Results */
         .results {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
         }
 
         .card {
@@ -96,6 +189,18 @@
             border: 1px solid #333;
             border-radius: 8px;
             overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: #ff8c00;
+            transform: translateY(-2px);
+        }
+
+        .card .image-wrap {
+            position: relative;
+            background: #181818;
+            cursor: pointer;
         }
 
         .card img {
@@ -112,16 +217,151 @@
 
         .score {
             color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-clip {
+            background: #2d2d2d;
+            color: #ff8c00;
+            border: 1px solid #444;
+        }
+
+        .badge-ocr {
+            background: #2d2d2d;
+            color: #58a6ff;
+            border: 1px solid #444;
+        }
+
+        .badge-both {
+            background: #ff8c00;
+            color: #181818;
+            border: 1px solid #ff8c00;
         }
 
         .ocr {
             margin-top: 6px;
-            color: #ddd;
+            color: #999;
+            font-size: 13px;
+            word-break: break-word;
+            line-height: 1.4;
         }
 
         .empty {
             text-align: center;
-            color: #888;
+            color: #666;
+            margin-top: 60px;
+        }
+
+        /* Right-click Context Menu */
+        .context-menu {
+            position: fixed;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            padding: 6px 0;
+            min-width: 160px;
+            z-index: 9999;
+            display: none;
+        }
+
+        .context-menu.open {
+            display: block;
+        }
+
+        .context-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: #eee;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .context-menu button:hover {
+            background: #ff8c00;
+            color: #181818;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            padding: 30px;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #eee;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: #ff8c00;
+            color: #181818;
+            border-color: #ff8c00;
+        }
+
+        .lightbox-info {
+            position: absolute;
+            bottom: 20px;
+            left: 24px;
+            color: #ddd;
+            font-size: 13px;
+            background: rgba(30,30,30,0.85);
+            padding: 8px 12px;
+            border-radius: 6px;
+            max-width: 50%;
         }
 
         /* Sidebar */
@@ -154,7 +394,7 @@
         .sidebar-header h2 {
             margin: 0;
             font-size: 22px;
-            color: #ff7518;
+            color: #ff8c00;
         }
 
         .close-btn {
@@ -193,7 +433,7 @@
 
         .setting-group input:focus,
         .setting-group select:focus {
-            border-color: #ff7518;
+            border-color: #ff8c00;
         }
 
         .folder-row {
@@ -219,31 +459,22 @@
             background: #333;
         }
 
-        .checkbox-row {
-            display: flex !important;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-row input {
-            width: auto;
-        }
-
         .save-btn {
             width: 100%;
             padding: 12px;
             margin-top: 5px;
             border: none;
             border-radius: 6px;
-            background: #ff7518;
-            color: white;
+            background: #ff8c00;
+            color: #181818;
+            font-weight: bold;
             font-size: 15px;
             cursor: pointer;
         }
 
         .save-btn:hover {
-            background: #e8660f;
+            background: #ffa033;
+            box-shadow: 0 0 12px rgba(255, 140, 0, 0.3);
         }
 
         .message {
@@ -251,18 +482,18 @@
             margin-top: 15px;
             padding: 10px 12px;
             border-radius: 6px;
-            background-color: #e8f7ee;
-            color: #218838;
+            background-color: #2d2d2d;
+            color: #4caf50;
+            border: 1px solid #3a5a3a;
         }
 
         .message.error {
-            background-color: #fdeaea;
-            color: #d93025;
-            border: 1px solid #f5c2c0;
+            background-color: #2d2d2d;
+            color: #ff4141;
+            border: 1px solid #5a3a3a;
         }
 
-        /* Small screens */
-        @media (max-width: 500px) {
+        @media (max-width: 600px) {
             .container {
                 margin-top: 65px;
             }
@@ -273,15 +504,7 @@
 
             form.search-form {
                 flex-direction: column;
-            }
-
-            .search-input,
-            .search-btn {
-                border-radius: 7px;
-            }
-
-            .search-btn {
-                margin-top: 8px;
+                align-items: stretch;
             }
 
             .settings-btn {
@@ -298,28 +521,61 @@
 
     <main class="container">
 
-        <h1>Search Through Your Images</h1>
+        <h1>Image Search</h1>
+        <p class="subtitle">Search by meaning, or use "quotes" for exact text</p>
 
-        <form class="search-form" action="/search" method="POST">
-            <input
-                class="search-input"
-                type="text"
-                name="query"
-                placeholder="Search your images..."
-                value="{{ query | default('') }}"
-                required
-            >
-            <button class="search-btn" type="submit">Search</button>
-        </form>
+        <div class="search-area">
+            <form class="search-form" action="/search" method="POST" id="searchForm">
+                <input
+                    class="search-input"
+                    type="text"
+                    name="query"
+                    id="searchInput"
+                    placeholder="Search your images..."
+                    value="{{ query | default('') }}"
+                    required
+                >
+                <button class="search-btn" type="submit">Search</button>
+            </form>
+
+            <div class="tolerance-row">
+                <label class="tolerance-toggle">
+                    <input 
+                        type="checkbox" 
+                        name="fuzzy" 
+                        {% if fuzzy %}checked{% endif %}
+                    >
+                    <span>Tolerance</span>
+                </label>
+                <span class="help-icon">?
+                    <span class="tooltip">
+                        When enabled, quoted text matches allow typos and partial words.
+                        Example: "helo" will match "hello".
+                    </span>
+                </span>
+            </div>
+        </div>
 
         {% if results %}
             <div class="results">
                 {% for item in results %}
-                    <div class="card">
-                        <img src="/view-image?file_path={{ item.path | urlencode }}" alt="Search result">
+                    <div class="card" 
+                         data-path="{{ item.path | urlencode }}"
+                         data-ocr-text="{{ item.ocr_text | join(' | ') | urlencode }}">
+                        <div class="image-wrap" 
+                             onclick="openLightbox('{{ item.path | urlencode }}', '{{ item.ocr_text | join(' | ') | urlencode }}')">
+                            <img src="/view-image?file_path={{ item.path | urlencode }}" alt="Search result">
+                        </div>
                         <div class="info">
                             <div class="score">
-                                Score: {{ "%.4f"|format(item.score) }}
+                                <span>{{ "%.4f"|format(item.score) }}</span>
+                                {% if item.source == "both" %}
+                                    <span class="badge badge-both">CLIP + OCR</span>
+                                {% elif item.source == "ocr" %}
+                                    <span class="badge badge-ocr">OCR</span>
+                                {% else %}
+                                    <span class="badge badge-clip">CLIP</span>
+                                {% endif %}
                             </div>
 
                             {% if item.ocr_text %}
@@ -337,6 +593,18 @@
 
     </main>
 
+    <!-- Right-Click Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <button onclick="showInFolder()">📁 Open in Folder</button>
+        <button onclick="copyFilePath()">📋 Copy Path</button>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImg" src="" alt="Maximized view">
+        <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
 
     <!-- Settings Sidebar -->
     <aside class="sidebar" id="settingsSidebar">
@@ -370,14 +638,8 @@
                 </div>
             </div>
 
-
-           
-
-
-
             <div class="setting-group">
                 <label for="topK">Top K Results</label>
-
                 <input
                     id="topK"
                     type="number"
@@ -385,8 +647,6 @@
                     value="{{ config.topK | default(5) }}"
                 >
             </div>
-
-
 
             <button class="save-btn" type="submit">
                 Save Settings
@@ -398,22 +658,104 @@
 
     </aside>
 
-
     <script>
         const sidebar = document.getElementById("settingsSidebar");
         const settingsForm = document.getElementById("settingsForm");
         const message = document.getElementById("settingsMessage");
+        const searchForm = document.getElementById("searchForm");
+        const searchInput = document.getElementById("searchInput");
+        const contextMenu = document.getElementById("contextMenu");
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImg = document.getElementById("lightboxImg");
+        const lightboxInfo = document.getElementById("lightboxInfo");
 
+        let currentImagePath = null;
 
+        // Block empty searches
+        searchForm.addEventListener("submit", function(e) {
+            if (!searchInput.value.trim()) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.style.borderColor = "#ff4141";
+                setTimeout(() => { searchInput.style.borderColor = ""; }, 1500);
+            }
+        });
+
+        // Right-Click Context Menu
+        document.addEventListener("contextmenu", function(e) {
+            const card = e.target.closest(".card");
+            if (card) {
+                e.preventDefault();
+                currentImagePath = card.dataset.path;
+                contextMenu.style.top = e.clientY + "px";
+                contextMenu.style.left = e.clientX + "px";
+                contextMenu.classList.add("open");
+            } else {
+                contextMenu.classList.remove("open");
+            }
+        });
+
+        document.addEventListener("click", function() {
+            contextMenu.classList.remove("open");
+        });
+
+        // Lightbox
+        function openLightbox(path, ocrText) {
+            currentImagePath = path;
+            lightboxImg.src = "/view-image?file_path=" + path;
+            lightboxInfo.textContent = decodeURIComponent(ocrText);
+            lightbox.classList.add("open");
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove("open");
+        }
+
+        function closeLightboxOnBackdrop(event) {
+            if (event.target === lightbox) {
+                closeLightbox();
+            }
+        }
+
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                closeLightbox();
+                contextMenu.classList.remove("open");
+            }
+        });
+
+        // Context menu actions
+        async function showInFolder() {
+            if (!currentImagePath) return;
+            try {
+                const response = await fetch("/api/show-in-folder?file_path=" + currentImagePath);
+                const data = await response.json();
+                if (data.status === "error") {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("Could not open folder.");
+            }
+        }
+
+        async function copyFilePath() {
+            if (!currentImagePath) return;
+            try {
+                const decoded = decodeURIComponent(currentImagePath);
+                await navigator.clipboard.writeText(decoded);
+            } catch (error) {
+                alert("Could not copy path.");
+            }
+        }
+
+        // Settings
         function openSettings() {
             sidebar.classList.add("open");
         }
 
-
         function closeSettings() {
             sidebar.classList.remove("open");
         }
-
 
         async function chooseFolder() {
             try {
@@ -428,7 +770,6 @@
             }
         }
 
-
         settingsForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
@@ -439,13 +780,10 @@
                 document.getElementById("watchFolder").value
             );
 
-
-
             formData.append(
                 "topK",
                 parseInt(document.getElementById("topK").value, 10)
             );
-
 
             try {
                 const response = await fetch("/api/settings", {
@@ -465,7 +803,6 @@
                 showMessage("Failed to save settings.", true);
             }
         });
-
 
         function showMessage(text, error = false) {
             message.textContent = text;

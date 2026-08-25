@@ -11,6 +11,10 @@ import os
 from config import loadConfig,saveConfig
 import tkinter as tk
 from fastapi.responses import FileResponse
+import subprocess
+import platform
+from pathlib import Path
+from urllib.parse import unquote
 
 config = loadConfig()
 app = FastAPI()
@@ -45,19 +49,21 @@ async def read_root(request: Request):
     return templates.TemplateResponse(request, "index.html", {"results": [], "config": config})
 
 @app.post("/search", response_class=HTMLResponse)
-async def do_search(request: Request, query: str = Form(...)):
+async def do_search(request: Request, query: str = Form(...), fuzzy: str = Form(None)):
     config=loadConfig()
-    raw_results = searchThroughImages(query, topK=config["topK"], watchFolder=config["path"])
+    fuzzy_enabled = fuzzy == "on"
+    raw_results = searchThroughImages(query, topK=config["topK"], watchFolder=config["path"],fuzzy_enabled=fuzzy_enabled)
     
     formattedResults = []
     for res in raw_results:
         formattedResults.append({
             "score": res.score,
             "path": res.payload["image_path"],
-            "ocr_text": res.payload['ocr_text']
+            "ocr_text": res.payload['ocr_text'],
+            "source": res.source
         })
         
-    return templates.TemplateResponse(request, "index.html", {"request": request, "results": formattedResults, "query": query, "config": config})
+    return templates.TemplateResponse(request, "index.html", {"request": request, "results": formattedResults, "query": query,"fuzzy": fuzzy_enabled ,"config": config})
 
 
 @app.get("/api/settings")
@@ -126,6 +132,41 @@ async def view_image(file_path: str):
     return FileResponse(file_path)
 
 
+@app.get("/api/show-in-folder")
+async def show_in_folder(file_path: str):
+    try:
+        decoded_path = unquote(file_path)
+        
+        # Security: validate path is within watch folder
+        config = loadConfig()
+        watch_path = Path(config["path"]).resolve()
+        requested = Path(decoded_path).resolve()
+        
+        if not str(requested).startswith(str(watch_path)):
+            return {"status": "error", "message": "Access denied."}
+        
+        if not requested.exists():
+            return {"status": "error", "message": "File not found."}
+        
+        system = platform.system()
+        
+        if system == "Windows":
+            # Windows requires shell=True and quoted path for explorer /select
+            subprocess.run(
+                f'explorer /select,"{str(requested)}"',
+                shell=True
+            )
+        elif system == "Darwin":
+            # macOS: reveal in Finder
+            subprocess.run(["open", "-R", str(requested)])
+        else:
+            # Linux: open the containing folder
+            subprocess.run(["xdg-open", str(requested.parent)])
+        
+        return {"status": "success"}
+    
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

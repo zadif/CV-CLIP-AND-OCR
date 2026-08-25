@@ -1,5 +1,5 @@
 {
-    "path": "C:/Users/zadif/Desktop/check",
+    "path": "C:/Users/zadif/Desktop/VS CODE/python/CV/CLIPXOCR/images",
     "clip_model": "ViT-B-16",
     "ocr_languages": [
         "en",

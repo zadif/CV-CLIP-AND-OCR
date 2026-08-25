@@ -10,9 +10,9 @@ def runServer():
 
 
 def createIcon():
-    img = Image.new('RGB', (64, 64), color=(0, 0, 0))
+    img = Image.new('RGB', (64, 64), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
-    draw.rectangle((10, 10, 54, 54), fill=(0, 120, 215))
+    draw.rectangle((10, 10, 54, 54), fill=(255, 130, 0))
     return img
 
 def openBrowser(icon, item):
