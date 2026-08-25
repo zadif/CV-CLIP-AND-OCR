@@ -1,3 +1,25 @@
+import os
+import sys
+
+# --- PORTABLE MODELS SETUP ---
+# If this is running as a compiled PyInstaller exe
+if getattr(sys, 'frozen', False):
+    # The folder where the .exe lives
+    APP_DIR = os.path.dirname(sys.executable)
+else:
+    # The folder where the script lives (for dev mode)
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Define our custom models directory
+MODELS_DIR = os.path.join(APP_DIR, "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
+
+# Force HuggingFace / OpenCLIP to use this local folder
+os.environ['HF_HOME'] = MODELS_DIR
+
+# Force EasyOCR to use this local folder
+os.environ['EASYOCR_HOME'] = MODELS_DIR
+
 import threading
 import uvicorn
 import pystray

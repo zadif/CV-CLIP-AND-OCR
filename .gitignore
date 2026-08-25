@@ -27,3 +27,7 @@ Thumbs.db
 
 images/
 qdrant/
+ImageSearch.spec
+build/
+dist/
+models/
