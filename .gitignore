@@ -31,3 +31,10 @@ ImageSearch.spec
 build/
 dist/
 models/
+
+InnoScript.iss
+Launch.vbs
+Output/
+download_models.py
+install.bat
+run.bat
