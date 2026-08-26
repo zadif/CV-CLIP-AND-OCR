@@ -19,7 +19,6 @@ from urllib.parse import unquote
 config = loadConfig()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-app.mount("/images", StaticFiles(directory="images"), name="images")
 
 observer = None
 
@@ -27,6 +26,9 @@ observer = None
 async def startup_event():
     global observer
     path = config["path"]
+    # Make sure the folder exists before watching it
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
     
     processAlreadyPresentImages(path)
     

@@ -441,6 +441,11 @@ def isAlreadyPresentInQdrant(image: str) -> bool:
     return len(results) > 0
 
 def processAlreadyPresentImages(folderPath:str):
+
+    if not os.path.exists(folderPath):
+        print(f"Watch folder does not exist: {folderPath}")
+        return
+
     # processing already present images if any
     
     files=os.listdir(folderPath)

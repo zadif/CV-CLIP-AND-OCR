@@ -1,0 +1,13 @@
+torch
+torchvision
+open-clip-torch
+easyocr
+Pillow
+pillow-heif
+qdrant-client
+watchdog
+fastapi
+uvicorn
+pystray
+Jinja2
+python-multipart

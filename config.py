@@ -7,9 +7,9 @@ def loadConfig():
     if not os.path.exists(CONFIG_FILE):
         # Create default config if it doesn't exist
         default_config = {
-            "path": os.path.join(os.getcwd(), "images"),
-            "clip_model": "ViT-B-32",
-            "ocr_languages": ["en"],
+            "path": os.path.join(os.path.expanduser("~"), "Desktop"),
+            "clip_model": "ViT-B-16",
+            "ocr_languages": ["en","ur"],
             "recursive_watch": True,
             "topK": 5
         }
